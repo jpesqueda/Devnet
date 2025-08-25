@@ -1,0 +1,48 @@
+$ docker run hello-world
+ 
+No se puede encontrar la imagen 'hello-world:latest' localmente
+ 
+latest: Extrayendo de library/hello-world
+ 
+1b930d010525: Extracción completa
+ 
+Digest: sha256:4df8ca8a7e309c256d60d7971ea14c27672fc0d10c5f303856d7bc48f8cc17ff
+ 
+Estado: Se ha descargado la imagen más reciente de hello-world:latest ¡
+ 
+
+Hola desde Docker!
+ 
+Este mensaje indica que la instalación parece funcionar correctamente.
+ 
+
+Para generar este mensaje, Docker realizó los siguientes pasos:
+ 
+ 1. El cliente Docker contactó con el demonio de Docker.
+ 
+ 2. El demonio de Docker extrajo la imagen "hello-world" de Docker Hub
+ 
+    (amd64)
+ . 
+ 3. El demonio de Docker creó un nuevo contenedor a partir de esa imagen que ejecuta el
+ 
+    ejecutable que produce la salida que está leyendo actualmente.
+ 
+ 4. El demonio de Docker transmitió esa salida al cliente de Docker, que la envió
+ 
+    a tu terminal.
+ 
+
+Para probar algo más ambicioso, puedes ejecutar un contenedor de Ubuntu con:
+ 
+ $ docker run -it ubuntu bash.
+ 
+
+Comparte imágenes, automatiza flujos de trabajo y más con un ID de Docker gratuito:
+ 
+ https://hub.docker.com/
+ 
+
+Para más ejemplos e ideas, visita:
+ 
+ https://docs.docker.com/get-started/

@@ -1,0 +1,158 @@
+
+Quick setup — if you’ve done this kind of thing before
+or	
+git@github.com:jpesqueda/Repositorio.git
+Get started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.
+
+…or create a new repository on the command line
+echo "# Repositorio" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:jpesqueda/Repositorio.git
+git push -u origin main
+…or push an existing repository from the command line
+git remote add origin git@github.com:jpesqueda/Repositorio.git
+git branch -M main
+git push -u origin main
+
+
+git status
+git add.
+git commit -m 
+git push 
+
+###################################################
+
+
+git --version
+git config --global user.name jpesqueda
+git config --global user.email pesqueda.jose@gmail.com
+git config --list
+
+cd D:\DevNet\Scripts_Python
+git init
+git add .
+git commit -m "Primer commit"
+git remote add origin https://git@github.com:jpesqueda/Devnet.git
+
+git branch -M main
+
+git push -u origin main
+git remote add origin https://git@github.com/jpesqueda/Devnet.git
+git remote -v
+git remote remove origin
+git remote -v
+git remote add origin https://github.com/jpesqueda/Devnet.git
+git remote -v
+git push -u origin main
+git push -u origin main
+git pull origin main --rebase
+git add .
+git rebase --continue
+git push origin main
+git statu
+git status
+
+########################################################
+
+comandos basicos ejemplos 
+
+PS D:\DevNet\Scripts_Python> git status
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        numero mayor while
+        numeropositivo.py
+nothing added to commit but untracked files present (use "git add" to track)
+
+
+PS D:\DevNet\Scripts_Python> git add .
+
+PS D:\DevNet\Scripts_Python> git status
+On branch main
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   numero mayor while
+        new file:   numeropositivo.py
+
+PS D:\DevNet\Scripts_Python> git commit -m "actualizacion"
+[main 98546e6] actualizacion
+ 2 files changed, 46 insertions(+)
+ create mode 100644 numero mayor while
+ create mode 100644 numeropositivo.py
+ 
+PS D:\DevNet\Scripts_Python> git push
+fatal: The current branch main has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin main
+
+To have this happen automatically for branches without a tracking
+upstream, see 'push.autoSetupRemote' in 'git help config'.
+
+PS D:\DevNet\Scripts_Python>  git push --set-upstream origin main
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 32 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 1.24 KiB | 1.24 MiB/s, done.
+Total 4 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/jpesqueda/Devnet.git
+   d313a0a..98546e6  main -> main
+branch 'main' set up to track 'origin/main'.
+
+
+PS D:\DevNet\Scripts_Python> git status
+On branch main
+Your branch is up to date with 'origin/main'.
+nothing to commit, working tree clean
+
+
+PS D:\DevNet\Scripts_Python> git 
+usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]
+           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]
+           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+           [--config-env=<name>=<envvar>] <command> [<args>]
+
+These are common Git commands used in various situations:
+
+start a working area (see also: git help tutorial)
+   clone     Clone a repository into a new directory
+   init      Create an empty Git repository or reinitialize an existing one
+
+work on the current change (see also: git help everyday)
+   add       Add file contents to the index
+   mv        Move or rename a file, a directory, or a symlink
+   restore   Restore working tree files
+   rm        Remove files from the working tree and from the index
+
+examine the history and state (see also: git help revisions)
+   bisect    Use binary search to find the commit that introduced a bug
+   diff      Show changes between commits, commit and working tree, etc
+   grep      Print lines matching a pattern
+   log       Show commit logs
+   show      Show various types of objects
+   status    Show the working tree status
+
+grow, mark and tweak your common history
+   branch    List, create, or delete branches
+   commit    Record changes to the repository
+   merge     Join two or more development histories together
+   rebase    Reapply commits on top of another base tip
+   reset     Reset current HEAD to the specified state
+   switch    Switch branches
+   tag       Create, list, delete or verify a tag object signed with GPG
+
+collaborate (see also: git help workflows)
+   fetch     Download objects and refs from another repository
+   pull      Fetch from and integrate with another repository or a local branch
+   push      Update remote refs along with associated objects
+
+'git help -a' and 'git help -g' list available subcommands and some
+concept guides. See 'git help <command>' or 'git help <concept>'
+to read about a specific subcommand or concept.
+See 'git help git' for an overview of the system.
