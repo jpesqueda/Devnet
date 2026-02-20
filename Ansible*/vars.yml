@@ -1,0 +1,21 @@
+# Target firmware (tu estándar)
+acs_target_version: "2.32.1"
+
+# API (típico ACS8000: https + puerto 48048 + /api/v1)
+acs_api_scheme: "https"
+acs_api_port: 48048
+acs_api_base: "/api/v1"
+acs_validate_certs: false
+
+# Fuente del firmware (el ACS lo descarga desde aquí)
+acs_fw_download:
+  protocol: "https"          # ftp | scp | sftp | https
+  ipAddress: "10.20.30.80"
+  username: "fwuser"
+  password: "fwpass"
+  directory: "/pub/firmware/"
+  filename: "ACS8xxx_v2.32.1.fl"
+
+# Polling
+acs_poll_delay: 10
+acs_poll_retries: 90
