@@ -1,0 +1,173 @@
+- name: ACS8000 - firmware check & upgrade (simple)
+  hosts: acs8000
+  gather_facts: false
+
+  vars_files:
+    - vars.yml
+
+  vars_prompt:
+    - name: acs_username
+      prompt: "ACS API username"
+      private: false
+    - name: acs_password
+      prompt: "ACS API password"
+      private: true
+
+  tasks:
+    - name: Build base URL
+      ansible.builtin.set_fact:
+        acs_base_url: "{{ acs_api_scheme }}://{{ ansible_host }}:{{ acs_api_port }}{{ acs_api_base }}"
+
+    - name: Login (JWT)
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/sessions/login"
+        method: POST
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Content-Type: "application/json"
+          Accept: "application/json"
+        body_format: json
+        body:
+          username: "{{ acs_username }}"
+          password: "{{ acs_password }}"
+      register: acs_login
+      no_log: true
+
+    - name: Save token
+      ansible.builtin.set_fact:
+        acs_jwt: "{{ acs_login.json.token }}"
+
+    - name: Get current firmware version
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/system/firmware/version"
+        method: GET
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Accept: "application/json"
+          Authorization: "Bearer {{ acs_jwt }}"
+      register: acs_fw_version
+
+    - name: Normalize current version
+      ansible.builtin.set_fact:
+        acs_current_norm: >-
+          {{
+            (acs_fw_version.json.version | regex_search('^([0-9]+(\\.[0-9]+)+)'))
+            | default(acs_fw_version.json.version)
+          }}
+
+    - name: Show versions
+      ansible.builtin.debug:
+        msg:
+          host: "{{ inventory_hostname }}"
+          current: "{{ acs_fw_version.json.version }}"
+          current_norm: "{{ acs_current_norm }}"
+          target: "{{ acs_target_version }}"
+
+    - name: Decide if upgrade needed
+      ansible.builtin.set_fact:
+        acs_upgrade_needed: "{{ acs_current_norm is version(acs_target_version, '<') }}"
+
+    - name: Print decision
+      ansible.builtin.debug:
+        msg: "Upgrade needed? {{ acs_upgrade_needed }}"
+
+    - name: Start firmware download (nonblocking)
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/system/firmware/download"
+        method: POST
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Content-Type: "application/json"
+          Accept: "application/json"
+          Authorization: "Bearer {{ acs_jwt }}"
+        body_format: json
+        body: "{{ acs_fw_download | combine({'flags':'nonblocking'}) }}"
+      register: acs_dl
+      when: acs_upgrade_needed
+      no_log: true
+
+    - name: Poll download status
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/system/firmware"
+        method: GET
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Accept: "application/json"
+          Authorization: "Bearer {{ acs_jwt }}"
+      register: acs_fw_status
+      until: >
+        (acs_fw_status.json.status | default('')) in
+        ['download successful','download failed','upgrade failed']
+      retries: "{{ acs_poll_retries }}"
+      delay: "{{ acs_poll_delay }}"
+      when: acs_upgrade_needed
+
+    - name: Fail if download failed
+      ansible.builtin.fail:
+        msg: "Firmware download failed: {{ acs_fw_status.json }}"
+      when: >
+        acs_upgrade_needed and
+        (acs_fw_status.json.status | default('')) in ['download failed','upgrade failed']
+
+    - name: Start firmware install (nonblocking)
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/system/firmware/install"
+        method: POST
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Content-Type: "application/json"
+          Accept: "application/json"
+          Authorization: "Bearer {{ acs_jwt }}"
+        body_format: json
+        body:
+          flags: "nonblocking"
+      register: acs_install
+      when: acs_upgrade_needed
+
+    - name: Poll install status
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/system/firmware"
+        method: GET
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Accept: "application/json"
+          Authorization: "Bearer {{ acs_jwt }}"
+      register: acs_install_status
+      until: >
+        (acs_install_status.json.status | default('')) in
+        ['install successful','install failed','upgrade failed']
+      retries: "{{ acs_poll_retries }}"
+      delay: "{{ acs_poll_delay }}"
+      when: acs_upgrade_needed
+
+    - name: Fail if install failed
+      ansible.builtin.fail:
+        msg: "Firmware install failed: {{ acs_install_status.json }}"
+      when: >
+        acs_upgrade_needed and
+        (acs_install_status.json.status | default('')) in ['install failed','upgrade failed']
+
+    - name: Verify version after install
+      ansible.builtin.uri:
+        url: "{{ acs_base_url }}/system/firmware/version"
+        method: GET
+        validate_certs: "{{ acs_validate_certs }}"
+        return_content: true
+        headers:
+          Accept: "application/json"
+          Authorization: "Bearer {{ acs_jwt }}"
+      register: acs_fw_after
+      when: acs_upgrade_needed
+
+    - name: Show version after
+      ansible.builtin.debug:
+        msg:
+          host: "{{ inventory_hostname }}"
+          after: "{{ acs_fw_after.json.version }}"
+      when: acs_upgrade_needed
